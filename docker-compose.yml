@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: lojas-bd
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Senha333
+      POSTGRES_DB: lojas
+    ports:
+      - "5433:5433"
+    volumes:
+      - lojas-bd-data:/var/lib/postgresql/data
+
+volumes:
+  lojas-bd-data:

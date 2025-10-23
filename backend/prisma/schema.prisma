@@ -1,0 +1,407 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Product {
+  id                String                 @id @default(cuid())
+  name              String
+  barcode           String?                @unique
+  photo             String? // url to photo
+  costPrice         Float
+  sellingPrice      Float
+  location          String? // e.g. shelf, aisle
+  expirationDate    DateTime?
+  minStock          Int                    @default(0)
+  currentStock      Int                    @default(0)
+  averageCost       Float? // calculated
+  investedValue     Float? // calculated
+  lastSaleDate      DateTime?
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  transactions      InventoryTransaction[]
+  SaleItem          SaleItem[]
+  PurchaseOrderItem PurchaseOrderItem[]
+}
+
+model InventoryTransaction {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  type      String // 'entry', 'sale', 'loss'
+  quantity  Int
+  unitCost  Float? // for entries
+  date      DateTime @default(now())
+}
+
+model Customer {
+  id                   String                 @id @default(cuid())
+  name                 String
+  email                String?                @unique
+  phone                String?
+  document             String?                @unique // CPF/CNPJ
+  address              String?
+  birthDate            DateTime?
+  loyaltyPoints        Int                    @default(0)
+  creditLimit          Float                  @default(0)
+  currentDebt          Float                  @default(0)
+  isActive             Boolean                @default(true)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  sales                Sale[]
+  creditTransactions   CreditTransaction[]
+  loyaltyTransactions  LoyaltyTransaction[]
+  FinancialTransaction FinancialTransaction[]
+  Installment          Installment[]
+}
+
+model User {
+  id       String  @id @default(cuid())
+  name     String
+  email    String  @unique
+  password String
+  role     String  @default("seller") // 'admin', 'manager', 'seller', 'client'
+  isActive Boolean @default(true)
+
+  commissionType       String                 @default("percentage") // 'percentage', 'fixed'
+  commissionValue      Float                  @default(0) // percentage or fixed amount
+  canCancelSales       Boolean                @default(false) // permission to cancel sales
+  canRefundSales       Boolean                @default(false) // permission to refund sales
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  sales                Sale[]
+  CashRegister         CashRegister[]
+  FinancialTransaction FinancialTransaction[]
+  FinancialLog         FinancialLog[]
+  commissions          Commission[]
+  Return               Return[]
+}
+
+model Commission {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  saleId    String
+  sale      Sale      @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  amount    Float
+  status    String    @default("pending") // 'pending', 'paid', 'cancelled'
+  paidDate  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Sale {
+  id          String          @id @default(cuid())
+  customerId  String?
+  customer    Customer?       @relation(fields: [customerId], references: [id])
+  userId      String
+  user        User            @relation(fields: [userId], references: [id])
+  total       Float
+  discount    Float           @default(0)
+  status      String          @default("completed") // 'completed', 'cancelled', 'refunded'
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  items       SaleItem[]
+  payments    Payment[]
+  fiscalDoc   FiscalDocument?
+  commissions Commission[]
+  Return      Return[]
+}
+
+model SaleItem {
+  id         String       @id @default(cuid())
+  saleId     String
+  sale       Sale         @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product      @relation(fields: [productId], references: [id])
+  quantity   Int
+  unitPrice  Float
+  discount   Float        @default(0)
+  total      Float
+  ReturnItem ReturnItem[]
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  saleId    String
+  sale      Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  method    String // 'cash', 'credit', 'debit', 'pix', 'credit_sale'
+  amount    Float
+  change    Float    @default(0)
+  createdAt DateTime @default(now())
+}
+
+model FiscalDocument {
+  id          String    @id @default(cuid())
+  saleId      String    @unique
+  sale        Sale      @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  type        String // 'nfce', 'sat', 'nfe'
+  number      String
+  series      String
+  key         String    @unique
+  xml         String?
+  pdf         String?
+  status      String    @default("issued") // 'issued', 'cancelled'
+  issuedAt    DateTime  @default(now())
+  cancelledAt DateTime?
+}
+
+model CashRegister {
+  id             String         @id @default(cuid())
+  userId         String
+  user           User           @relation(fields: [userId], references: [id])
+  openedAt       DateTime       @default(now())
+  closedAt       DateTime?
+  initialAmount  Float
+  expectedAmount Float?
+  actualAmount   Float?
+  status         String         @default("open") // 'open', 'closed'
+  movements      CashMovement[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model CashMovement {
+  id             String       @id @default(cuid())
+  cashRegisterId String
+  cashRegister   CashRegister @relation(fields: [cashRegisterId], references: [id], onDelete: Cascade)
+  type           String // 'withdrawal', 'deposit', 'sale', 'refund'
+  amount         Float
+  description    String?
+  createdAt      DateTime     @default(now())
+}
+
+model CreditTransaction {
+  id          String    @id @default(cuid())
+  customerId  String
+  customer    Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  type        String // 'sale', 'payment', 'adjustment'
+  amount      Float
+  description String?
+  dueDate     DateTime?
+  paidDate    DateTime?
+  status      String    @default("pending") // 'pending', 'paid', 'overdue'
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model LoyaltyTransaction {
+  id          String   @id @default(cuid())
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  type        String // 'earned', 'redeemed', 'expired'
+  points      Int
+  description String?
+  saleId      String?
+  createdAt   DateTime @default(now())
+}
+
+model LoyaltyProgram {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  pointsPerReal Float    @default(1) // points earned per R$ spent
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Supplier {
+  id                   String                 @id @default(cuid())
+  name                 String
+  cnpj                 String?                @unique
+  ie                   String? // Inscrição Estadual
+  cnae                 String? // CNAE code
+  email                String?
+  phone                String?
+  whatsapp             String?
+  address              String?
+  representativeName   String?
+  representativePhone  String?
+  representativeEmail  String?
+  bankName             String?
+  bankAccount          String?
+  bankAgency           String?
+  pixKey               String?
+  defaultPaymentTerms  String? // e.g., "30/60/90 days"
+  creditLimit          Float                  @default(0)
+  isActive             Boolean                @default(true)
+  reliabilityScore     Int                    @default(100) // 0-100 score
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  purchaseOrders       PurchaseOrder[]
+  reliabilityHistory   ReliabilityHistory[]
+  RecurringEntry       RecurringEntry[]
+  FinancialTransaction FinancialTransaction[]
+  Installment          Installment[]
+}
+
+model PurchaseOrder {
+  id           String              @id @default(cuid())
+  supplierId   String
+  supplier     Supplier            @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  orderNumber  String              @unique
+  status       String              @default("pending") // 'pending', 'approved', 'ordered', 'received', 'cancelled'
+  orderDate    DateTime            @default(now())
+  expectedDate DateTime?
+  receivedDate DateTime?
+  totalAmount  Float
+  notes        String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  items        PurchaseOrderItem[]
+}
+
+model PurchaseOrderItem {
+  id               String        @id @default(cuid())
+  purchaseOrderId  String
+  purchaseOrder    PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  productId        String
+  product          Product       @relation(fields: [productId], references: [id])
+  quantity         Int
+  unitCost         Float
+  totalCost        Float
+  receivedQuantity Int           @default(0)
+  status           String        @default("pending") // 'pending', 'received', 'partial'
+}
+
+model ReliabilityHistory {
+  id          String   @id @default(cuid())
+  supplierId  String
+  supplier    Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  eventType   String // 'on_time_delivery', 'late_delivery', 'quality_issue', 'payment_issue'
+  description String?
+  scoreChange Int // positive or negative impact on reliability
+  orderId     String?
+  createdAt   DateTime @default(now())
+}
+
+// Financial Management Models
+model ExpenseCategory {
+  id             String                 @id @default(cuid())
+  name           String
+  type           String // 'fixed', 'variable', 'investment'
+  description    String?
+  isActive       Boolean                @default(true)
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  expenses       FinancialTransaction[]
+  RecurringEntry RecurringEntry[]
+}
+
+model CostCenter {
+  id             String                 @id @default(cuid())
+  name           String
+  description    String?
+  isActive       Boolean                @default(true)
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  expenses       FinancialTransaction[]
+  RecurringEntry RecurringEntry[]
+}
+
+model RecurringEntry {
+  id            String                 @id @default(cuid())
+  description   String
+  amount        Float
+  type          String // 'expense', 'income'
+  frequency     String // 'monthly', 'weekly', 'yearly', 'daily'
+  startDate     DateTime
+  endDate       DateTime?
+  categoryId    String?
+  category      ExpenseCategory?       @relation(fields: [categoryId], references: [id])
+  costCenterId  String?
+  costCenter    CostCenter?            @relation(fields: [costCenterId], references: [id])
+  supplierId    String?
+  supplier      Supplier?              @relation(fields: [supplierId], references: [id])
+  isActive      Boolean                @default(true)
+  lastGenerated DateTime?
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  transactions  FinancialTransaction[]
+}
+
+model FinancialTransaction {
+  id            String           @id @default(cuid())
+  type          String // 'payable', 'receivable', 'expense', 'income', 'payment'
+  description   String
+  amount        Float
+  dueDate       DateTime?
+  paidDate      DateTime?
+  status        String           @default("pending") // 'pending', 'paid', 'overdue', 'cancelled'
+  categoryId    String?
+  category      ExpenseCategory? @relation(fields: [categoryId], references: [id])
+  costCenterId  String?
+  costCenter    CostCenter?      @relation(fields: [costCenterId], references: [id])
+  supplierId    String?
+  supplier      Supplier?        @relation(fields: [supplierId], references: [id])
+  customerId    String?
+  customer      Customer?        @relation(fields: [customerId], references: [id])
+  recurringId   String?
+  recurring     RecurringEntry?  @relation(fields: [recurringId], references: [id])
+  installmentId String?
+  installment   Installment?     @relation(fields: [installmentId], references: [id])
+  userId        String
+  user          User             @relation(fields: [userId], references: [id])
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  logs          FinancialLog[]
+}
+
+model Installment {
+  id                   String                 @id @default(cuid())
+  description          String
+  totalAmount          Float
+  numberOfInstallments Int
+  installmentAmount    Float
+  startDate            DateTime
+  customerId           String?
+  customer             Customer?              @relation(fields: [customerId], references: [id])
+  supplierId           String?
+  supplier             Supplier?              @relation(fields: [supplierId], references: [id])
+  isActive             Boolean                @default(true)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  transactions         FinancialTransaction[]
+}
+
+model FinancialLog {
+  id            String               @id @default(cuid())
+  transactionId String
+  transaction   FinancialTransaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  action        String // 'created', 'updated', 'paid', 'cancelled'
+  oldValues     String? // JSON string of old values
+  newValues     String? // JSON string of new values
+  userId        String
+  user          User                 @relation(fields: [userId], references: [id])
+  createdAt     DateTime             @default(now())
+}
+
+model Return {
+  id          String       @id @default(cuid())
+  saleId      String
+  sale        Sale         @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User         @relation(fields: [userId], references: [id])
+  totalAmount Float
+  status      String       @default("completed") // 'completed', 'cancelled'
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  items       ReturnItem[]
+}
+
+model ReturnItem {
+  id         String   @id @default(cuid())
+  returnId   String
+  return     Return   @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  saleItemId String
+  saleItem   SaleItem @relation(fields: [saleItemId], references: [id])
+  quantity   Int
+  unitPrice  Float
+  reason     String
+  createdAt  DateTime @default(now())
+}
