@@ -32,7 +32,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 // Supplier Management routes
 
 // Supplier CRUD
-app.get('/api/suppliers', async (req, res) => {
+app.get('/suppliers', async (req, res) => {
   try {
     const suppliers = await prisma.supplier.findMany({
       include: {
@@ -53,7 +53,7 @@ app.get('/api/suppliers', async (req, res) => {
   }
 });
 
-app.post('/api/suppliers', async (req, res) => {
+app.post('/suppliers', async (req, res) => {
   try {
     const supplier = await prisma.supplier.create({
       data: req.body
@@ -64,7 +64,7 @@ app.post('/api/suppliers', async (req, res) => {
   }
 });
 
-app.put('/api/suppliers/:id', async (req, res) => {
+app.put('/suppliers/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const supplier = await prisma.supplier.update({
@@ -85,7 +85,7 @@ app.put('/api/suppliers/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/suppliers/:id', async (req, res) => {
+app.delete('/suppliers/:id', async (req, res) => {
   try {
     const { id } = req.params;
     await prisma.supplier.delete({
@@ -98,7 +98,7 @@ app.delete('/api/suppliers/:id', async (req, res) => {
 });
 
 // Purchase Order Management
-app.get('/api/purchase-orders', async (req, res) => {
+app.get('/purchase-orders', async (req, res) => {
   try {
     const { supplierId, status } = req.query;
     const where: any = {};
@@ -122,7 +122,7 @@ app.get('/api/purchase-orders', async (req, res) => {
   }
 });
 
-app.post('/api/purchase-orders', async (req, res) => {
+app.post('/purchase-orders', async (req, res) => {
   try {
     const { supplierId, items, expectedDate, notes } = req.body;
 
@@ -165,7 +165,7 @@ app.post('/api/purchase-orders', async (req, res) => {
   }
 });
 
-app.put('/api/purchase-orders/:id/status', async (req, res) => {
+app.put('/purchase-orders/:id/status', async (req, res) => {
   try {
     const { id } = req.params;
     const { status, receivedDate } = req.body;
@@ -234,7 +234,7 @@ app.put('/api/purchase-orders/:id/status', async (req, res) => {
 });
 
 // Update purchase order item received quantity
-app.put('/api/purchase-orders/:orderId/items/:itemId', async (req, res) => {
+app.put('/purchase-orders/:orderId/items/:itemId', async (req, res) => {
   try {
     const { orderId, itemId } = req.params;
     const { receivedQuantity } = req.body;
@@ -304,7 +304,7 @@ app.put('/api/purchase-orders/:orderId/items/:itemId', async (req, res) => {
 });
 
 // Supplier Reports
-app.get('/api/reports/suppliers', async (req, res) => {
+app.get('/reports/suppliers', async (req, res) => {
   try {
     const suppliers = await prisma.supplier.findMany({
       include: {
@@ -341,7 +341,7 @@ app.get('/api/reports/suppliers', async (req, res) => {
 });
 
 // Product Cost Analysis Report
-app.get('/api/reports/product-costs', async (req, res) => {
+app.get('/reports/product-costs', async (req, res) => {
   try {
     const products = await prisma.product.findMany({
       include: {
@@ -393,7 +393,7 @@ app.get('/api/reports/product-costs', async (req, res) => {
 });
 
 // Pending Orders Report
-app.get('/api/reports/pending-orders', async (req, res) => {
+app.get('/reports/pending-orders', async (req, res) => {
   try {
     const pendingOrders = await prisma.purchaseOrder.findMany({
       where: {

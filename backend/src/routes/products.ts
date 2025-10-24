@@ -30,7 +30,7 @@ app.use('/uploads', express.static('uploads'));
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // Product routes
-app.get('/api/products', async (req, res) => {
+app.get('/products', async (req, res) => {
   try {
     const products = await prisma.product.findMany();
     res.json(products);
@@ -39,7 +39,7 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
-app.post('/api/products', upload.single('photo'), async (req, res) => {
+app.post('/products', upload.single('photo'), async (req, res) => {
   try {
     const { name, barcode, costPrice, sellingPrice, location, expirationDate, minStock } = req.body;
     const photo = req.file ? req.file.filename : null;
@@ -63,7 +63,7 @@ app.post('/api/products', upload.single('photo'), async (req, res) => {
   }
 });
 
-app.put('/api/products/:id', async (req, res) => {
+app.put('/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const data = req.body;
@@ -78,7 +78,7 @@ app.put('/api/products/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/products/:id', async (req, res) => {
+app.delete('/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
     await prisma.product.delete({

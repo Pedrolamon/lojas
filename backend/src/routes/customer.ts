@@ -31,7 +31,7 @@ app.use('/uploads', express.static('uploads'));
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // Customer routes
-app.get('/api/customers', async (req, res) => {
+app.get('/customers', async (req, res) => {
   try {
     const customers = await prisma.customer.findMany({
       include: {
@@ -52,7 +52,7 @@ app.get('/api/customers', async (req, res) => {
   }
 });
 
-app.post('/api/customers', async (req, res) => {
+app.post('/customers', async (req, res) => {
   try {
     const { name, email, phone, document, address, birthDate, creditLimit } = req.body;
     const customer = await prisma.customer.create({
@@ -72,7 +72,7 @@ app.post('/api/customers', async (req, res) => {
   }
 });
 
-app.put('/api/customers/:id', async (req: Request, res: Response) => {
+app.put('/customers/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const data = req.body as any;
@@ -98,7 +98,7 @@ app.put('/api/customers/:id', async (req: Request, res: Response) => {
   }
 });
 
-app.delete('/api/customers/:id', async (req, res) => {
+app.delete('/customers/:id', async (req, res) => {
   try {
     const { id } = req.params;
     await prisma.customer.delete({

@@ -62,7 +62,7 @@ app.post('/api/cash-register/open', async (req, res) => {
 });
 
 // Get current open cash register for user
-app.get('/api/cash-register/current/:userId', async (req, res) => {
+app.get('/cash-register/current/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
     const cashRegister = await prisma.cashRegister.findFirst({
@@ -81,7 +81,7 @@ app.get('/api/cash-register/current/:userId', async (req, res) => {
 });
 
 // Sangria (withdrawal)
-app.post('/api/cash-register/withdrawal', async (req, res) => {
+app.post('/cash-register/withdrawal', async (req, res) => {
   try {
     const { cashRegisterId, amount, description } = req.body;
 
@@ -123,7 +123,7 @@ app.post('/api/cash-register/withdrawal', async (req, res) => {
 });
 
 // Close cash register
-app.post('/api/cash-register/close', async (req, res) => {
+app.post('/cash-register/close', async (req, res) => {
   try {
     const { cashRegisterId, actualAmount } = req.body;
 
@@ -190,7 +190,7 @@ app.post('/api/cash-register/close', async (req, res) => {
 });
 
 // Get cash register history
-app.get('/api/cash-register/history', async (req, res) => {
+app.get('/cash-register/history', async (req, res) => {
   try {
     const { userId, startDate, endDate } = req.query;
     const where: any = {};
@@ -219,7 +219,7 @@ app.get('/api/cash-register/history', async (req, res) => {
 });
 
 // Movement report by operator
-app.get('/api/reports/cash-movements', async (req, res) => {
+app.get('/reports/cash-movements', async (req, res) => {
   try {
     const { userId, startDate, endDate } = req.query;
     const where: any = {};

@@ -32,7 +32,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 // Loyalty Program routes
 
 // Get customer loyalty status
-app.get('/api/customers/:id/loyalty', async (req, res) => {
+app.get('/customers/:id/loyalty', async (req, res) => {
   try {
     const { id } = req.params;
     const customer = await prisma.customer.findUnique({
@@ -62,7 +62,7 @@ app.get('/api/customers/:id/loyalty', async (req, res) => {
 });
 
 // Earn loyalty points
-app.post('/api/customers/:id/loyalty/earn', async (req, res) => {
+app.post('/customers/:id/loyalty/earn', async (req, res) => {
   try {
     const { id } = req.params;
     const { points, description, saleId } = req.body;
@@ -97,7 +97,7 @@ app.post('/api/customers/:id/loyalty/earn', async (req, res) => {
 });
 
 // Redeem loyalty points
-app.post('/api/customers/:id/loyalty/redeem', async (req, res) => {
+app.post('/customers/:id/loyalty/redeem', async (req, res) => {
   try {
     const { id } = req.params;
     const { points, description } = req.body;
@@ -135,7 +135,7 @@ app.post('/api/customers/:id/loyalty/redeem', async (req, res) => {
 });
 
 // Loyalty Program management
-app.get('/api/loyalty-programs', async (req, res) => {
+app.get('/loyalty-programs', async (req, res) => {
   try {
     const programs = await prisma.loyaltyProgram.findMany({
       where: { isActive: true }
@@ -146,7 +146,7 @@ app.get('/api/loyalty-programs', async (req, res) => {
   }
 });
 
-app.post('/api/loyalty-programs', async (req, res) => {
+app.post('/loyalty-programs', async (req, res) => {
   try {
     const { name, description, pointsPerReal } = req.body;
     const program = await prisma.loyaltyProgram.create({
@@ -163,7 +163,7 @@ app.post('/api/loyalty-programs', async (req, res) => {
 });
 
 // Auto-earn points on sale (call this when creating a sale)
-app.post('/api/sales/:saleId/earn-points', async (req, res) => {
+app.post('/sales/:saleId/earn-points', async (req, res) => {
   try {
     const { saleId } = req.params;
 

@@ -33,7 +33,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 
 // Inventory transaction routes
-app.post('/api/inventory/entry', async (req, res) => {
+app.post('/inventory/entry', async (req, res) => {
   try {
     const { productId, quantity, unitCost } = req.body;
     const product = await prisma.product.findUnique({ where: { id: productId } });
@@ -69,7 +69,7 @@ app.post('/api/inventory/entry', async (req, res) => {
   }
 });
 
-app.post('/api/inventory/sale', async (req, res) => {
+app.post('/inventory/sale', async (req, res) => {
   try {
     const { productId, quantity } = req.body;
     const product = await prisma.product.findUnique({ where: { id: productId } });
@@ -99,7 +99,7 @@ app.post('/api/inventory/sale', async (req, res) => {
   }
 });
 
-app.post('/api/inventory/loss', async (req, res) => {
+app.post('/inventory/loss', async (req, res) => {
   try {
     const { productId, quantity } = req.body;
     const product = await prisma.product.findUnique({ where: { id: productId } });
@@ -129,7 +129,7 @@ app.post('/api/inventory/loss', async (req, res) => {
 });
 
 // Reports and alerts
-app.get('/api/products/low-stock', async (req, res) => {
+app.get('/products/low-stock', async (req, res) => {
   try {
     const products = await prisma.product.findMany();
     const lowStock = products.filter(p => p.currentStock <= p.minStock);
@@ -139,7 +139,7 @@ app.get('/api/products/low-stock', async (req, res) => {
   }
 });
 
-app.get('/api/products/stagnant', async (req, res) => {
+app.get('/products/stagnant', async (req, res) => {
   try {
     const days = parseInt(req.query.days as string) || 30;
     const cutoffDate = new Date();
@@ -159,7 +159,7 @@ app.get('/api/products/stagnant', async (req, res) => {
   }
 });
 
-app.get('/api/products/expiring', async (req, res) => {
+app.get('/products/expiring', async (req, res) => {
   try {
     const days = parseInt(req.query.days as string) || 7;
     const cutoffDate = new Date();

@@ -31,7 +31,7 @@ app.use('/uploads', express.static('uploads'));
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // User routes
-app.get('/api/users', async (req, res) => {
+app.get('/users', async (req, res) => {
   try {
     const users = await prisma.user.findMany({
       select: {
@@ -53,7 +53,7 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
-app.post('/api/users', async (req, res) => {
+app.post('/users', async (req, res) => {
   try {
     const { name, email, password, role, commissionType, commissionValue, canCancelSales, canRefundSales } = req.body;
     const user = await prisma.user.create({
@@ -86,7 +86,7 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-app.put('/api/users/:id', async (req, res) => {
+app.put('/users/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { name, email, password, role, commissionType, commissionValue, canCancelSales, canRefundSales, isActive } = req.body;

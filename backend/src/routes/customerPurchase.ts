@@ -30,7 +30,7 @@ app.use('/uploads', express.static('uploads'));
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // Customer purchase history
-app.get('/api/customers/:id/history', async (req, res) => {
+app.get('/customers/:id/history', async (req, res) => {
   try {
     const { id } = req.params;
     const customer = await prisma.customer.findUnique({
@@ -60,7 +60,7 @@ app.get('/api/customers/:id/history', async (req, res) => {
 // Credit Control routes
 
 // Get customer credit status
-app.get('/api/customers/:id/credit', async (req, res) => {
+app.get('/customers/:id/credit', async (req, res) => {
   try {
     const { id } = req.params;
     const customer = await prisma.customer.findUnique({
@@ -98,7 +98,7 @@ app.get('/api/customers/:id/credit', async (req, res) => {
 });
 
 // Add credit transaction (sale on credit)
-app.post('/api/customers/:id/credit/sale', async (req, res) => {
+app.post('/customers/:id/credit/sale', async (req, res) => {
   try {
     const { id } = req.params;
     const { amount, description, dueDate } = req.body;
@@ -137,7 +137,7 @@ app.post('/api/customers/:id/credit/sale', async (req, res) => {
 });
 
 // Process credit payment
-app.post('/api/customers/:id/credit/payment', async (req, res) => {
+app.post('/customers/:id/credit/payment', async (req, res) => {
   try {
     const { id } = req.params;
     const { amount, description } = req.body;

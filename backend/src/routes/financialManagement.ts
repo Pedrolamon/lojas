@@ -34,7 +34,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 // Financial Management Routes
 
 // Expense Categories
-app.get('/api/expense-categories', async (req, res) => {
+app.get('/expense-categories', async (req, res) => {
   try {
     const categories = await prisma.expenseCategory.findMany({
       where: { isActive: true },
@@ -46,7 +46,7 @@ app.get('/api/expense-categories', async (req, res) => {
   }
 });
 
-app.post('/api/expense-categories', async (req, res) => {
+app.post('/expense-categories', async (req, res) => {
   try {
     const category = await prisma.expenseCategory.create({
       data: req.body
@@ -57,7 +57,7 @@ app.post('/api/expense-categories', async (req, res) => {
   }
 });
 
-app.put('/api/expense-categories/:id', async (req, res) => {
+app.put('/expense-categories/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const category = await prisma.expenseCategory.update({
@@ -70,7 +70,7 @@ app.put('/api/expense-categories/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/expense-categories/:id', async (req, res) => {
+app.delete('/expense-categories/:id', async (req, res) => {
   try {
     const { id } = req.params;
     await prisma.expenseCategory.update({
@@ -84,7 +84,7 @@ app.delete('/api/expense-categories/:id', async (req, res) => {
 });
 
 // Cost Centers
-app.get('/api/cost-centers', async (req, res) => {
+app.get('/cost-centers', async (req, res) => {
   try {
     const costCenters = await prisma.costCenter.findMany({
       where: { isActive: true },
@@ -96,7 +96,7 @@ app.get('/api/cost-centers', async (req, res) => {
   }
 });
 
-app.post('/api/cost-centers', async (req, res) => {
+app.post('/cost-centers', async (req, res) => {
   try {
     const costCenter = await prisma.costCenter.create({
       data: req.body
@@ -107,7 +107,7 @@ app.post('/api/cost-centers', async (req, res) => {
   }
 });
 
-app.put('/api/cost-centers/:id', async (req, res) => {
+app.put('/cost-centers/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const costCenter = await prisma.costCenter.update({
@@ -120,7 +120,7 @@ app.put('/api/cost-centers/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/cost-centers/:id', async (req, res) => {
+app.delete('/cost-centers/:id', async (req, res) => {
   try {
     const { id } = req.params;
     await prisma.costCenter.update({
@@ -134,7 +134,7 @@ app.delete('/api/cost-centers/:id', async (req, res) => {
 });
 
 // Recurring Entries
-app.get('/api/recurring-entries', async (req, res) => {
+app.get('/recurring-entries', async (req, res) => {
   try {
     const entries = await prisma.recurringEntry.findMany({
       where: { isActive: true },
@@ -151,7 +151,7 @@ app.get('/api/recurring-entries', async (req, res) => {
   }
 });
 
-app.post('/api/recurring-entries', async (req, res) => {
+app.post('/recurring-entries', async (req, res) => {
   try {
     const entry = await prisma.recurringEntry.create({
       data: req.body,
@@ -167,7 +167,7 @@ app.post('/api/recurring-entries', async (req, res) => {
   }
 });
 
-app.put('/api/recurring-entries/:id', async (req, res) => {
+app.put('/recurring-entries/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const entry = await prisma.recurringEntry.update({
@@ -185,7 +185,7 @@ app.put('/api/recurring-entries/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/recurring-entries/:id', async (req, res) => {
+app.delete('/recurring-entries/:id', async (req, res) => {
   try {
     const { id } = req.params;
     await prisma.recurringEntry.update({
@@ -199,7 +199,7 @@ app.delete('/api/recurring-entries/:id', async (req, res) => {
 });
 
 // Financial Transactions
-app.get('/api/financial-transactions', async (req, res) => {
+app.get('/financial-transactions', async (req, res) => {
   try {
     const { type, status, startDate, endDate } = req.query;
     const where: any = {};
@@ -232,7 +232,7 @@ app.get('/api/financial-transactions', async (req, res) => {
   }
 });
 
-app.post('/api/financial-transactions', async (req, res) => {
+app.post('/financial-transactions', async (req, res) => {
   try {
     const { userId } = req.body;
     const transaction = await prisma.financialTransaction.create({
@@ -264,7 +264,7 @@ app.post('/api/financial-transactions', async (req, res) => {
   }
 });
 
-app.put('/api/financial-transactions/:id', async (req, res) => {
+app.put('/financial-transactions/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { userId, ...updateData } = req.body;
@@ -305,7 +305,7 @@ app.put('/api/financial-transactions/:id', async (req, res) => {
 });
 
 // Pay transaction
-app.post('/api/financial-transactions/:id/pay', async (req, res) => {
+app.post('/financial-transactions/:id/pay', async (req, res) => {
   try {
     const { id } = req.params;
     const { userId, paidDate } = req.body;
@@ -350,7 +350,7 @@ app.post('/api/financial-transactions/:id/pay', async (req, res) => {
 
 
 // Installments
-app.get('/api/installments', async (req, res) => {
+app.get('/installments', async (req, res) => {
   try {
     const { customerId, supplierId, status } = req.query;
     const where: any = { isActive: true };
@@ -381,7 +381,7 @@ app.get('/api/installments', async (req, res) => {
   }
 });
 
-app.post('/api/installments', async (req, res) => {
+app.post('/installments', async (req, res) => {
   try {
     const { totalAmount, numberOfInstallments, startDate, ...installmentData } = req.body;
 
@@ -430,7 +430,7 @@ app.post('/api/installments', async (req, res) => {
   }
 });
 
-app.put('/api/installments/:id', async (req, res) => {
+app.put('/installments/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const installment = await prisma.installment.update({
@@ -454,7 +454,7 @@ app.put('/api/installments/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/installments/:id', async (req, res) => {
+app.delete('/installments/:id', async (req, res) => {
   try {
     const { id } = req.params;
     await prisma.installment.update({
@@ -468,7 +468,7 @@ app.delete('/api/installments/:id', async (req, res) => {
 });
 
 // Get installment details with payment status
-app.get('/api/installments/:id', async (req, res) => {
+app.get('/installments/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const installment = await prisma.installment.findUnique({

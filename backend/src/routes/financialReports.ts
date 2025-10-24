@@ -35,7 +35,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 // Financial Reports
 
 // Accounts Payable Report
-app.get('/api/reports/accounts-payable', async (req, res) => {
+app.get('/reports/accounts-payable', async (req, res) => {
   try {
     const { status, supplierId, startDate, endDate } = req.query;
     const where: any = { type: 'payable' };
@@ -79,7 +79,7 @@ app.get('/api/reports/accounts-payable', async (req, res) => {
 });
 
 // Accounts Receivable Report
-app.get('/api/reports/accounts-receivable', async (req, res) => {
+app.get('/reports/accounts-receivable', async (req, res) => {
   try {
     const { status, customerId, startDate, endDate } = req.query;
     const where: any = { type: 'receivable' };
@@ -123,7 +123,7 @@ app.get('/api/reports/accounts-receivable', async (req, res) => {
 });
 
 // Cash Flow Report
-app.get('/api/reports/cash-flow', async (req, res) => {
+app.get('/reports/cash-flow', async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     const where: any = {};
@@ -165,7 +165,7 @@ app.get('/api/reports/cash-flow', async (req, res) => {
 });
 
 // Profit & Loss (DRE) Report
-app.get('/api/reports/profit-loss', async (req, res) => {
+app.get('/reports/profit-loss', async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     const where: any = {};
@@ -227,7 +227,7 @@ app.get('/api/reports/profit-loss', async (req, res) => {
 });
 
 // Break-even Analysis
-app.get('/api/reports/break-even', async (req, res) => {
+app.get('/reports/break-even', async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     const where: any = {};
@@ -290,7 +290,7 @@ app.get('/api/reports/break-even', async (req, res) => {
 });
 
 // Delinquency Report
-app.get('/api/reports/delinquency', async (req, res) => {
+app.get('/reports/delinquency', async (req, res) => {
   try {
     const { days = 30 } = req.query;
     const cutoffDate = new Date();
@@ -355,7 +355,7 @@ app.get('/api/reports/delinquency', async (req, res) => {
 });
 
 // Cash Flow Forecast
-app.get('/api/reports/cash-flow-forecast', async (req, res) => {
+app.get('/reports/cash-flow-forecast', async (req, res) => {
   try {
     const { months = 6 } = req.query;
     const today = new Date();
@@ -470,7 +470,7 @@ function shouldIncludeRecurringInMonth(entry: any, monthStart: Date): boolean {
 }
 
 // Financial Alerts
-app.get('/api/alerts/financial', async (req, res) => {
+app.get('/alerts/financial', async (req, res) => {
   try {
     const today = new Date();
     const nextWeek = new Date();
@@ -525,7 +525,7 @@ app.get('/api/alerts/financial', async (req, res) => {
 });
 
 // Recurring Entries Processing (should be called daily)
-app.post('/api/recurring-entries/process', async (req, res) => {
+app.post('/recurring-entries/process', async (req, res) => {
   try {
     const today = new Date();
     const recurringEntries = await prisma.recurringEntry.findMany({
@@ -596,7 +596,7 @@ async function shouldGenerateTransaction(entry: any, today: Date): Promise<boole
 }
 
 // Backup API endpoints
-app.post('/api/backup/create', async (req, res) => {
+app.post('/backup/create', async (req, res) => {
   try {
     const backupPath = await backupManager.createBackup();
     res.json({ success: true, backupPath });
@@ -606,7 +606,7 @@ app.post('/api/backup/create', async (req, res) => {
   }
 });
 
-app.get('/api/backup/list', async (req, res) => {
+app.get('/backup/list', async (req, res) => {
   try {
     const backups = backupManager.listBackups();
     const backupInfo = backupManager.getBackupInfo();
@@ -617,7 +617,7 @@ app.get('/api/backup/list', async (req, res) => {
   }
 });
 
-app.post('/api/backup/restore/:filename', async (req, res) => {
+app.post('/backup/restore/:filename', async (req, res) => {
   try {
     const { filename } = req.params;
     await backupManager.restoreBackup(filename);
@@ -628,7 +628,7 @@ app.post('/api/backup/restore/:filename', async (req, res) => {
   }
 });
 
-app.post('/api/backup/cleanup', async (req, res) => {
+app.post('/backup/cleanup', async (req, res) => {
   try {
     const { keepCount = 10 } = req.body;
     await backupManager.cleanupOldBackups(keepCount);
@@ -640,7 +640,7 @@ app.post('/api/backup/cleanup', async (req, res) => {
 });
 
 // History endpoints for cash register and stock movements
-app.get('/api/history/cash-movements', async (req, res) => {
+app.get('/history/cash-movements', async (req, res) => {
   try {
     const { userId, startDate, endDate, limit = 100 } = req.query;
     const where: any = {};
@@ -679,7 +679,7 @@ app.get('/api/history/cash-movements', async (req, res) => {
   }
 });
 
-app.get('/api/history/stock-movements', async (req, res) => {
+app.get('/history/stock-movements', async (req, res) => {
   try {
     const { productId, type, startDate, endDate, limit = 100 } = req.query;
     const where: any = {};

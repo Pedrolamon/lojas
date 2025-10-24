@@ -7,12 +7,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 
-const app = express();
+const app = express.Router();
 const prisma = new PrismaClient();
-
-
-app.use(cors());
-app.use(express.json());
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -52,11 +48,10 @@ const authenticateToken = (req: Request, res: Response, next: any) => {
 };
 
 // Auth routes
-app.post('/api/auth/register', async (req, res) => {
-  try {
-    const { name, email, password, role = 'client' } = req.body;
+app.post('/register', async (req, res) => {
+  const { name, email, password, role = 'client' } = req.body;
 
-    // Check if user already exists
+  try {
     const existingUser = await prisma.user.findUnique({
       where: { email }
     });
@@ -99,7 +94,7 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
-app.post('/api/auth/login', async (req, res) => {
+app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -146,7 +141,7 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 // Get current user profile
-app.get('/api/auth/profile', authenticateToken, async (req, res) => {
+app.get('/profile', authenticateToken, async (req, res) => {
   try {
     const userId = (req as any).user.id;
     const user = await prisma.user.findUnique({

@@ -31,7 +31,7 @@ app.use('/uploads', express.static('uploads'));
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // Sales routes
-app.get('/api/sales', async (req, res) => {
+app.get('/sales', async (req, res) => {
   try {
     const sales = await prisma.sale.findMany({
       include: {
@@ -49,7 +49,7 @@ app.get('/api/sales', async (req, res) => {
   }
 });
 
-app.post('/api/sales', async (req, res) => {
+app.post('/sales', async (req, res) => {
   try {
     const { customerId, userId, items, payments, discount = 0 } = req.body;
 
@@ -132,7 +132,7 @@ app.post('/api/sales', async (req, res) => {
 });
 
 // Product search by barcode
-app.get('/api/products/search/:barcode', async (req, res) => {
+app.get('/products/search/:barcode', async (req, res) => {
   try {
     const { barcode } = req.params;
     const product = await prisma.product.findUnique({
@@ -146,7 +146,7 @@ app.get('/api/products/search/:barcode', async (req, res) => {
 });
 
 // Returns routes
-app.post('/api/returns', async (req, res) => {
+app.post('/returns', async (req, res) => {
   try {
     const { saleId, items, userId } = req.body;
 
@@ -217,7 +217,7 @@ app.post('/api/returns', async (req, res) => {
   }
 });
 
-app.get('/api/returns', async (req, res) => {
+app.get('/returns', async (req, res) => {
   try {
     const { saleId, limit = 50 } = req.query;
     const where: any = {};
@@ -251,7 +251,7 @@ app.get('/api/returns', async (req, res) => {
 });
 
 // Sales reports
-app.get('/api/reports/sales', async (req, res) => {
+app.get('/reports/sales', async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     const where: any = {};
@@ -310,7 +310,7 @@ app.get('/api/reports/sales', async (req, res) => {
 });
 
 // Sales by period (day, week, month)
-app.get('/api/reports/sales-by-period', async (req, res) => {
+app.get('/reports/sales-by-period', async (req, res) => {
   try {
     const { period = 'day', days = 30 } = req.query;
     const endDate = new Date();
@@ -372,7 +372,7 @@ app.get('/api/reports/sales-by-period', async (req, res) => {
 
 
 // Profit analysis report
-app.get('/api/reports/profit-analysis', async (req, res) => {
+app.get('/reports/profit-analysis', async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     const where: any = {};
@@ -454,7 +454,7 @@ app.get('/api/reports/profit-analysis', async (req, res) => {
 });
 
 // Enhanced stagnant products report
-app.get('/api/reports/stagnant-enhanced', async (req, res) => {
+app.get('/reports/stagnant-enhanced', async (req, res) => {
   try {
     const { days = 60 } = req.query;
     const cutoffDate = new Date();
@@ -518,7 +518,7 @@ app.get('/api/reports/stagnant-enhanced', async (req, res) => {
 });
 
 // Commission report
-app.get('/api/reports/commissions', async (req, res) => {
+app.get('/reports/commissions', async (req, res) => {
   try {
     const { startDate, endDate, userId } = req.query;
     const where: any = {};
