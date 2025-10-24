@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { api } from './lib/api'
+
+//pages
 import Login from './components/Login'
 import Register from './components/Register'
 import ProductList from './components/ProductList'
@@ -12,7 +15,6 @@ import FinancialManagement from './components/FinancialManagement'
 import UserManagement from './components/UserManagement'
 import SystemManagement from './components/SystemManagement'
 import InstallmentManagement from './components/InstallmentManagement'
-import axios from 'axios'
 
 function AppContent() {
   const { user, logout, isLoading } = useAuth()
@@ -34,9 +36,9 @@ function AppContent() {
   const fetchDashboardStats = async () => {
     try {
       const [productsRes, salesRes, lowStockRes] = await Promise.all([
-        axios.get('http://localhost:3001/api/products'),
-        axios.get('http://localhost:3001/api/reports/sales'),
-        axios.get('http://localhost:3001/api/products/low-stock')
+        api.get('/api/products'),
+        api.get('/api/reports/sales'),
+        api.get('/api/products/low-stock')
       ])
 
       setStats({
@@ -179,7 +181,7 @@ function AppContent() {
           {canAccessPDV && (
             <button
               onClick={() => setActiveTab('pdv')}
-              className="flex items-center p-4 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+              className="flex items-center p-4  rounded-lg transition-colors"
             >
               <svg className="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -194,7 +196,7 @@ function AppContent() {
           {canAccessProducts && (
             <button
               onClick={() => setActiveTab('products')}
-              className="flex items-center p-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+              className="flex items-center p-4 rounded-lg transition-colors"
             >
               <svg className="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -209,7 +211,7 @@ function AppContent() {
           {canAccessReports && (
             <button
               onClick={() => setActiveTab('reports')}
-              className="flex items-center p-4 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors"
+              className="flex items-center p-4 rounded-lg transition-colors"
             >
               <svg className="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -246,7 +248,7 @@ function AppContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
-              <div className="flex-shrink-0 flex items-center">
+              <div className="shrink-0 flex items-center">
                 <h1 className="text-xl font-bold text-gray-900">Lojas Inventory</h1>
               </div>
             </div>
